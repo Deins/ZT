@@ -1,5 +1,7 @@
 const std = @import("std");
 
+const zig_ver_minor = @import("builtin").zig_version.minor;
+
 // zig 11 vs nightly compatibility
 fn openIterableDirAbsolute(path_: []const u8) !if (@hasDecl(std.fs, "openIterableDirAbsolute")) std.fs.IterableDir else std.fs.Dir {
     const path = if (std.fs.path.isAbsolute(path_)) path_ else @panic("path is not absolute! Use: Build.pathFromRoot()");
@@ -119,7 +121,7 @@ pub fn link(b: *std.build.Builder, exe: *std.build.CompileStep) !void {
     exe.addModule("imgui", imgui);
     exe.addModule("zt", zt);
 
-    try glfw.link(b, exe);
+    if (zig_ver_minor <= 11) try glfw.link(b, exe) else glfw.link(b, exe);
 }
 
 // STB
